@@ -105,6 +105,26 @@ export default function Home() {
   // Available power-ups stored in state so they can be consumed/granted dynamically
   const [availablePowerUps, setAvailablePowerUps] = useState([]);
 
+  // Load achievements from database
+  const loadAchievements = useCallback(async () => {
+    if (!session) return;
+    
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/achievements`, {
+        headers: {
+          'Authorization': `Bearer ${session.accessToken}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAchievements(data.achievements || []);
+      }
+    } catch (error) {
+      console.error('Failed to load achievements:', error);
+    }
+  }, [session]);
+
   // Load achievements when user logs in
   useEffect(() => {
     if (session) {
@@ -183,25 +203,6 @@ export default function Home() {
     comeback: { name: "Comeback Kid", icon: "💪", description: "Win after being down to 1 life" }
   };
 
-  // Load achievements from database
-  const loadAchievements = useCallback(async () => {
-    if (!session) return;
-    
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/achievements`, {
-        headers: {
-          'Authorization': `Bearer ${session.accessToken}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setAchievements(data.achievements || []);
-      }
-    } catch (error) {
-      console.error('Error loading achievements:', error);
-    }
-  }, [session]);
 
   // Save achievement to database
   const saveAchievement = useCallback(async (achievementId) => {
