@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export default function Profile() {
   const { data: session, status } = useSession()
@@ -193,7 +194,7 @@ function GameHistorySection({ scores, loading }) {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Game History</h2>
         <p className="text-gray-600 dark:text-gray-400">
-          No games played yet. <a href="/" className="text-blue-600 hover:underline">Play a game</a> to see your scores!
+          No games played yet. <Link href="/" className="text-blue-600 hover:underline">Play a game</Link> to see your scores!
         </p>
       </div>
     )
