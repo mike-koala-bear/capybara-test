@@ -6,6 +6,7 @@ import os
 import unicodedata
 from typing import Optional, List, Tuple, Dict
 from pydantic import BaseModel
+from mangum import Mangum
 
 import asyncio
 
@@ -304,8 +305,12 @@ async def _random_word_from_wordnik(pos: Optional[str]) -> Optional[Tuple[str, O
     except Exception:
         pass
 
-# Initialize database tables
-create_tables()
+# Initialize database tables (with error handling for serverless)
+try:
+    create_tables()
+except Exception as e:
+    print(f"Warning: Could not initialize database tables: {e}")
+    # Tables will be created on first database access
 
 # Health check endpoint for deployment
 @app.get("/health")
@@ -761,5 +766,4 @@ async def _load_countries() -> List[str]:
     return names
 
 # Vercel serverless function handler
-from mangum import Mangum
 handler = Mangum(app)
