@@ -6,7 +6,6 @@ import os
 import unicodedata
 from typing import Optional, List, Tuple, Dict
 from pydantic import BaseModel
-from mangum import Mangum
 
 import asyncio
 
@@ -72,13 +71,18 @@ class AchievementUnlock(BaseModel):
 
 app = FastAPI()
 
-# Allow the Next.js dev server to call this API during development
+# Allow the Next.js dev server locally and the deployed Vercel frontend (via FRONTEND_URL)
+_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+_frontend_env = os.getenv("FRONTEND_URL")
+if _frontend_env:
+    _origins.append(_frontend_env)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -765,5 +769,3 @@ async def _load_countries() -> List[str]:
     _COUNTRY_DISPLAY = displays
     return names
 
-# Vercel serverless function handler
-handler = Mangum(app)
