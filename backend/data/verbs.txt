@@ -1,0 +1,10 @@
+dance
+sing
+jump
+laugh
+build
+swim
+read
+write
+climb
+draw

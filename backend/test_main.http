@@ -1,0 +1,30 @@
+# Test your FastAPI endpoints
+
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/hello/User
+Accept: application/json
+
+###
+
+# Get a random word (default: both pools)
+GET http://127.0.0.1:8000/game/random
+Accept: application/json
+
+###
+
+# Get from global words only
+GET http://127.0.0.1:8000/game/random?source=global
+Accept: application/json
+
+###
+
+# Get from countries only (word has no spaces; display preserves capitals and spaces)
+GET http://127.0.0.1:8000/game/random?source=countries
+Accept: application/json
+
+###
+
