@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Text, Boolean
+from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
@@ -6,7 +7,19 @@ import os
 
 # Database setup
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./capybara.db")
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {})
+
+# Prefer psycopg driver on Vercel/Neon for PostgreSQL
+if DATABASE_URL.startswith("postgresql://") and "+psycopg" not in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
+
+# Use NullPool in serverless environments to avoid connection reuse issues
+if DATABASE_URL.startswith("postgresql+"):
+    engine = create_engine(DATABASE_URL, poolclass=NullPool)
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+    )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
